@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DollarSign, Users, TrendingUp, Activity, GripVertical } from 'lucide-react'
+import { DollarSign, Users, TrendingUp, Activity, GripVertical, type LucideIcon } from 'lucide-react'
 import { StatsCard } from './stats-card'
 import { RevenueChart, UsersChart } from './chart'
 import { useLanguage } from '@/context/language-context'
@@ -55,7 +55,7 @@ export function DraggableDashboard() {
     const renderWidget = (widget: Widget) => {
         switch (widget.type) {
             case 'stats':
-                const statsMap: Record<string, { titleKey: string; value: string; change: string; icon: any; trend: 'up' | 'down' }> = {
+                const statsMap: Record<string, { titleKey: string; value: string; change: string; icon: LucideIcon; trend: 'up' | 'down' }> = {
                     revenue: { titleKey: 'totalRevenue', value: '$45,231', change: '+20.1%', icon: DollarSign, trend: 'up' },
                     users: { titleKey: 'activeUsers', value: '2,350', change: '+15.3%', icon: Users, trend: 'up' },
                     conversion: { titleKey: 'conversionRate', value: '12.5%', change: '+4.2%', icon: TrendingUp, trend: 'up' },

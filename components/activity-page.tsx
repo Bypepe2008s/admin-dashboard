@@ -2,10 +2,10 @@
 
 import { useActivity } from '@/context/activity-context'
 import { useLanguage } from '@/context/language-context'
-import { Trash2, UserPlus, UserCheck, UserX, LogIn, Download } from 'lucide-react'
+import { Trash2, UserPlus, UserCheck, UserX, LogIn, Download, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 
-const typeIcons: Record<string, any> = {
+const typeIcons: Record<string, LucideIcon> = {
     create: UserPlus,
     update: UserCheck,
     delete: UserX,
@@ -38,7 +38,6 @@ export function ActivityPage() {
         export: t('exportAction'),
     }
 
-    // Traducir las acciones de actividad
     const actionTranslations: Record<string, string> = {
         'inició sesión': t('startedSession'),
         'creó usuario': t('createdUser'),
