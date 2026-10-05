@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Download, Filter } from 'lucide-react'
 import { useToast } from '@/context/toast-context'
+import { useLanguage } from '@/context/language-context'
 
 interface Invoice {
     id: number
@@ -25,60 +26,70 @@ export function BillingPage() {
     const [invoices, setInvoices] = useState(initialInvoices)
     const [filterStatus, setFilterStatus] = useState<string>('all')
     const { showToast } = useToast()
+    const { t } = useLanguage()
 
     const filteredInvoices = invoices.filter(inv =>
         filterStatus === 'all' || inv.status === filterStatus
     )
 
-    const totalAmount = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0)
-    const paidAmount = invoices.filter(inv => inv.status === 'Pagada').reduce((sum, inv) => sum + inv.amount, 0)
-    const pendingAmount = invoices.filter(inv => inv.status === 'Pendiente').reduce((sum, inv) => sum + inv.amount, 0)
+    const totalAmount = filteredInvoices.reduce((sum: number, inv: Invoice) => sum + inv.amount, 0)
+    const paidAmount = invoices.filter(inv => inv.status === 'Pagada').reduce((sum: number, inv: Invoice) => sum + inv.amount, 0)
+    const pendingAmount = invoices.filter(inv => inv.status === 'Pendiente').reduce((sum: number, inv: Invoice) => sum + inv.amount, 0)
+
+    const getStatusTranslation = (status: string) => {
+        const map: Record<string, string> = {
+            'Pagada': t('paidStatus'),
+            'Pendiente': t('pendingStatus'),
+            'Vencida': t('overdueStatus'),
+        }
+        return map[status] || status
+    }
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-foreground">Facturación</h2>
+                <h2 className="text-2xl font-bold text-foreground">{t('billingPage')}</h2>
                 <button
-                    onClick={() => showToast('Función en desarrollo', 'info')}
+                    onClick={() => showToast(t('featureInDevelopment'), 'info')}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
                 >
                     <Plus size={20} />
-                    Nueva Factura
+                    {t('newInvoice')}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-card border border-border rounded-lg p-6">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Total Facturado</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('totalBilled')}</h3>
                     <p className="text-2xl font-bold text-foreground">${totalAmount.toLocaleString()}</p>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-6">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Pagado</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('paid')}</h3>
                     <p className="text-2xl font-bold text-green-600">${paidAmount.toLocaleString()}</p>
                 </div>
                 <div className="bg-card border border-border rounded-lg p-6">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Pendiente</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('pending')}</h3>
                     <p className="text-2xl font-bold text-yellow-600">${pendingAmount.toLocaleString()}</p>
                 </div>
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-foreground">Facturas</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{t('invoices')}</h3>
                     <div className="flex gap-2">
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
                             className="px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         >
-                            <option value="all">Todos los estados</option>
-                            <option value="Pagada">Pagada</option>
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="Vencida">Vencida</option>
+                            <option value="all">{t('allStatuses')}</option>
+                            <option value="Pagada">{t('paidStatus')}</option>
+                            <option value="Pendiente">{t('pendingStatus')}</option>
+                            <option value="Vencida">{t('overdueStatus')}</option>
                         </select>
                         <button className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2 text-foreground">
                             <Download size={20} />
-                            Exportar
+                            {t('export')}
                         </button>
                     </div>
                 </div>
@@ -87,12 +98,12 @@ export function BillingPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-border">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">ID</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Cliente</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Monto</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Fecha</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Vencimiento</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Estado</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('id')}</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('client')}</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('amount')}</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('date')}</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('dueDate')}</th>
+                                <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('status')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,7 +121,7 @@ export function BillingPage() {
                                                     ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                                                     : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                             }`}>
-                                            {invoice.status}
+                                            {getStatusTranslation(invoice.status)}
                                         </span>
                                     </td>
                                 </tr>

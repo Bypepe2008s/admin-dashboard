@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { GripVertical, Trash2 } from 'lucide-react'
 import { useToast } from '@/context/toast-context'
+import { useLanguage } from '@/context/language-context'
 
 interface DragItem {
     id: number
@@ -11,17 +12,18 @@ interface DragItem {
 }
 
 const initialItems: DragItem[] = [
-    { id: 1, title: 'Tarea 1', description: 'Descripción de la tarea 1' },
-    { id: 2, title: 'Tarea 2', description: 'Descripción de la tarea 2' },
-    { id: 3, title: 'Tarea 3', description: 'Descripción de la tarea 3' },
-    { id: 4, title: 'Tarea 4', description: 'Descripción de la tarea 4' },
-    { id: 5, title: 'Tarea 5', description: 'Descripción de la tarea 5' },
+    { id: 1, title: 'Task 1', description: 'Task 1 description' },
+    { id: 2, title: 'Task 2', description: 'Task 2 description' },
+    { id: 3, title: 'Task 3', description: 'Task 3 description' },
+    { id: 4, title: 'Task 4', description: 'Task 4 description' },
+    { id: 5, title: 'Task 5', description: 'Task 5 description' },
 ]
 
 export function DragDropList() {
     const [items, setItems] = useState(initialItems)
     const [draggedItem, setDraggedItem] = useState<number | null>(null)
     const { showToast } = useToast()
+    const { t } = useLanguage()
 
     const handleDragStart = (id: number) => {
         setDraggedItem(id)
@@ -42,12 +44,12 @@ export function DragDropList() {
 
     const handleDragEnd = () => {
         setDraggedItem(null)
-        showToast('Orden actualizado', 'success')
+        showToast(t('orderUpdated'), 'success')
     }
 
     const handleDelete = (id: number) => {
         setItems(items.filter(item => item.id !== id))
-        showToast('Elemento eliminado', 'success')
+        showToast(t('itemDeleted'), 'success')
     }
 
     return (

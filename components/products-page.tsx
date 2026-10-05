@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, Edit, Trash2, X, Search } from 'lucide-react'
 import { useToast } from '@/context/toast-context'
+import { useLanguage } from '@/context/language-context'
 import { EmptyState } from './loading'
 
 interface Product {
@@ -28,6 +29,7 @@ export function ProductsPage() {
     const [showModal, setShowModal] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const { showToast } = useToast()
+    const { t } = useLanguage()
 
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,34 +37,42 @@ export function ProductsPage() {
     )
 
     const handleDelete = (id: number) => {
-        if (confirm('¿Eliminar este producto?')) {
+        if (confirm(t('confirmDeleteProduct'))) {
             setProducts(products.filter(p => p.id !== id))
-            showToast('Producto eliminado', 'success')
+            showToast(t('productDeleted'), 'success')
         }
     }
 
     const handleSave = (product: Product) => {
         if (editingProduct) {
             setProducts(products.map(p => p.id === product.id ? product : p))
-            showToast('Producto actualizado', 'success')
+            showToast(t('productUpdated'), 'success')
         } else {
             setProducts([...products, { ...product, id: Math.max(...products.map(p => p.id)) + 1 }])
-            showToast('Producto agregado', 'success')
+            showToast(t('productAdded'), 'success')
         }
         setShowModal(false)
         setEditingProduct(null)
     }
 
+    const getStatusTranslation = (status: string) => {
+        const map: Record<string, string> = {
+            'Activo': t('activeStatus'),
+            'Agotado': t('outOfStock'),
+        }
+        return map[status] || status
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-foreground">Productos</h2>
+                <h2 className="text-2xl font-bold text-foreground">{t('productsPage')}</h2>
                 <button
                     onClick={() => { setEditingProduct(null); setShowModal(true) }}
                     className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
                 >
                     <Plus size={20} />
-                    Agregar Producto
+                    {t('addProduct')}
                 </button>
             </div>
 
@@ -71,7 +81,7 @@ export function ProductsPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                     <input
                         type="text"
-                        placeholder="Buscar productos..."
+                        placeholder={t('searchProducts')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -80,15 +90,15 @@ export function ProductsPage() {
 
                 {filteredProducts.length === 0 ? (
                     <EmptyState
-                        title="No hay productos"
-                        description="Agrega el primer producto para comenzar"
+                        title={t('noProducts')}
+                        description={t('noProductsDesc')}
                         action={
                             <button
                                 onClick={() => setShowModal(true)}
                                 className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
                             >
                                 <Plus size={20} />
-                                Agregar Producto
+                                {t('addProduct')}
                             </button>
                         }
                     />
@@ -97,12 +107,12 @@ export function ProductsPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Nombre</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Categoría</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Precio</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Stock</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Estado</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Acciones</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('name')}</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('category')}</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('price')}</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('stock')}</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('status')}</th>
+                                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{t('actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -117,7 +127,7 @@ export function ProductsPage() {
                                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                                     : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                                 }`}>
-                                                {product.status}
+                                                {getStatusTranslation(product.status)}
                                             </span>
                                         </td>
                                         <td className="py-3 px-4">
@@ -159,6 +169,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
     const [formData, setFormData] = useState<Product>(
         product || { id: 0, name: '', category: '', price: 0, stock: 0, status: 'Activo' }
     )
+    const { t } = useLanguage()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -170,7 +181,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
             <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-foreground">
-                        {product ? 'Editar Producto' : 'Agregar Producto'}
+                        {product ? t('editProduct') : t('addProduct')}
                     </h3>
                     <button onClick={onClose} className="p-1 hover:bg-accent rounded transition-colors">
                         <X size={20} />
@@ -179,7 +190,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Nombre</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('name')}</label>
                         <input
                             type="text"
                             value={formData.name}
@@ -190,7 +201,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Categoría</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('category')}</label>
                         <input
                             type="text"
                             value={formData.category}
@@ -202,7 +213,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Precio</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">{t('price')}</label>
                             <input
                                 type="number"
                                 value={formData.price}
@@ -212,7 +223,7 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-foreground mb-1">Stock</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">{t('stock')}</label>
                             <input
                                 type="number"
                                 value={formData.stock}
@@ -224,23 +235,23 @@ function ProductModal({ product, onSave, onClose }: { product: Product | null; o
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Estado</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">{t('status')}</label>
                         <select
                             value={formData.status}
                             onChange={(e) => setFormData({ ...formData, status: e.target.value as Product['status'] })}
                             className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         >
-                            <option value="Activo">Activo</option>
-                            <option value="Agotado">Agotado</option>
+                            <option value="Activo">{t('activeStatus')}</option>
+                            <option value="Agotado">{t('outOfStock')}</option>
                         </select>
                     </div>
 
                     <div className="flex gap-2 pt-4">
                         <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors text-foreground">
-                            Cancelar
+                            {t('cancel')}
                         </button>
                         <button type="submit" className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                            Guardar
+                            {t('save')}
                         </button>
                     </div>
                 </form>

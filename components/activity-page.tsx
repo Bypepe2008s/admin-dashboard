@@ -21,14 +21,6 @@ const typeColors: Record<string, string> = {
     export: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
 }
 
-const typeLabels: Record<string, string> = {
-    create: 'Creación',
-    update: 'Actualización',
-    delete: 'Eliminación',
-    login: 'Login',
-    export: 'Exportación',
-}
-
 export function ActivityPage() {
     const { activities, clearActivities } = useActivity()
     const { t } = useLanguage()
@@ -38,16 +30,24 @@ export function ActivityPage() {
         filterType === 'all' || a.type === filterType
     )
 
+    const typeLabels: Record<string, string> = {
+        create: t('creation'),
+        update: t('update'),
+        delete: t('deletion'),
+        login: t('login'),
+        export: t('exportAction'),
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-foreground">Actividad Reciente</h2>
+                <h2 className="text-2xl font-bold text-foreground">{t('recentActivity')}</h2>
                 <button
                     onClick={clearActivities}
                     className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2 text-foreground"
                 >
                     <Trash2 size={20} />
-                    Limpiar
+                    {t('clearActivity')}
                 </button>
             </div>
 
@@ -57,9 +57,15 @@ export function ActivityPage() {
                     className={`px-4 py-2 rounded-lg border transition-colors ${filterType === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-accent text-foreground'
                         }`}
                 >
-                    Todas
+                    {t('allActivities')}
                 </button>
-                {Object.entries(typeLabels).map(([key, label]) => (
+                {Object.entries({
+                    create: t('creation'),
+                    update: t('update'),
+                    delete: t('deletion'),
+                    login: t('login'),
+                    export: t('exportAction'),
+                }).map(([key, label]) => (
                     <button
                         key={key}
                         onClick={() => setFilterType(key)}
@@ -74,7 +80,7 @@ export function ActivityPage() {
             <div className="bg-card border border-border rounded-lg p-6">
                 {filteredActivities.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
-                        No hay actividad registrada
+                        {t('noActivity')}
                     </div>
                 ) : (
                     <div className="space-y-3">

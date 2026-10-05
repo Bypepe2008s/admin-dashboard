@@ -3,6 +3,7 @@
 import { useLanguage } from '@/context/language-context'
 import { useThemeColor } from '@/context/theme-color-context'
 import { useTheme } from './theme-provider'
+import { usePermissions } from '@/context/permissions-context'
 import { Globe, Palette, Moon, Sun } from 'lucide-react'
 
 type Language = 'es' | 'en' | 'fr' | 'pt' | 'de'
@@ -35,8 +36,8 @@ export function SettingsPage() {
                             key={lang}
                             onClick={() => setLanguage(lang)}
                             className={`px-4 py-2 rounded-lg border transition-colors ${language === lang
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'border-border hover:bg-accent text-foreground'
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'border-border hover:bg-accent text-foreground'
                                 }`}
                         >
                             {languageNames[lang]}
@@ -54,8 +55,8 @@ export function SettingsPage() {
                     <button
                         onClick={() => setTheme('light')}
                         className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${theme === 'light'
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'border-border hover:bg-accent text-foreground'
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'border-border hover:bg-accent text-foreground'
                             }`}
                     >
                         <Sun size={16} />
@@ -64,8 +65,8 @@ export function SettingsPage() {
                     <button
                         onClick={() => setTheme('dark')}
                         className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${theme === 'dark'
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'border-border hover:bg-accent text-foreground'
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'border-border hover:bg-accent text-foreground'
                             }`}
                     >
                         <Moon size={16} />
@@ -87,6 +88,40 @@ export function SettingsPage() {
                     ))}
                 </div>
             </div>
+
+            <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('roleSystem')}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{t('roleDescription')}</p>
+                <RoleSelector />
+            </div>
+        </div>
+    )
+}
+
+function RoleSelector() {
+    const { role, setRole } = usePermissions()
+    const { t } = useLanguage()
+    const roles = [
+        { id: 'admin' as const, label: t('adminRole'), desc: t('fullAccess') },
+        { id: 'editor' as const, label: t('editorRole'), desc: t('limitedAccess') },
+        { id: 'viewer' as const, label: t('viewerRole'), desc: t('readOnly') },
+    ]
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {roles.map(r => (
+                <button
+                    key={r.id}
+                    onClick={() => setRole(r.id)}
+                    className={`p-4 rounded-lg border text-left transition-colors ${role === r.id
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border hover:bg-accent'
+                        }`}
+                >
+                    <p className="font-medium">{r.label}</p>
+                    <p className="text-xs opacity-75">{r.desc}</p>
+                </button>
+            ))}
         </div>
     )
 }

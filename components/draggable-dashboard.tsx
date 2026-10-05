@@ -1,29 +1,31 @@
 'use client'
 
 import { useState } from 'react'
-import { DollarSign, Users, TrendingUp, Activity, GripVertical, X } from 'lucide-react'
+import { DollarSign, Users, TrendingUp, Activity, GripVertical } from 'lucide-react'
 import { StatsCard } from './stats-card'
 import { RevenueChart, UsersChart } from './chart'
+import { useLanguage } from '@/context/language-context'
 
 interface Widget {
     id: string
     type: 'stats' | 'chart' | 'users-chart'
-    title: string
+    titleKey: string
     visible: boolean
 }
 
 const defaultWidgets: Widget[] = [
-    { id: 'revenue', type: 'stats', title: 'Ingresos', visible: true },
-    { id: 'users', type: 'stats', title: 'Usuarios', visible: true },
-    { id: 'conversion', type: 'stats', title: 'Conversión', visible: true },
-    { id: 'response', type: 'stats', title: 'Respuesta', visible: true },
-    { id: 'revenue-chart', type: 'chart', title: 'Gráfico Ingresos', visible: true },
-    { id: 'users-chart', type: 'users-chart', title: 'Gráfico Usuarios', visible: true },
+    { id: 'revenue', type: 'stats', titleKey: 'revenue', visible: true },
+    { id: 'users', type: 'stats', titleKey: 'users', visible: true },
+    { id: 'conversion', type: 'stats', titleKey: 'conversion', visible: true },
+    { id: 'response', type: 'stats', titleKey: 'response', visible: true },
+    { id: 'revenue-chart', type: 'chart', titleKey: 'revenueChart', visible: true },
+    { id: 'users-chart', type: 'users-chart', titleKey: 'usersChart', visible: true },
 ]
 
 export function DraggableDashboard() {
     const [widgets, setWidgets] = useState<Widget[]>(defaultWidgets)
     const [draggedWidget, setDraggedWidget] = useState<string | null>(null)
+    const { t } = useLanguage()
 
     const handleDragStart = (id: string) => {
         setDraggedWidget(id)
@@ -53,14 +55,14 @@ export function DraggableDashboard() {
     const renderWidget = (widget: Widget) => {
         switch (widget.type) {
             case 'stats':
-                const statsMap: Record<string, { title: string; value: string; change: string; icon: any; trend: 'up' | 'down' }> = {
-                    revenue: { title: 'Ingresos Totales', value: '$45,231', change: '+20.1%', icon: DollarSign, trend: 'up' },
-                    users: { title: 'Usuarios Activos', value: '2,350', change: '+15.3%', icon: Users, trend: 'up' },
-                    conversion: { title: 'Tasa de Conversión', value: '12.5%', change: '+4.2%', icon: TrendingUp, trend: 'up' },
-                    response: { title: 'Tiempo de Respuesta', value: '1.2s', change: '-8.1%', icon: Activity, trend: 'down' },
+                const statsMap: Record<string, { titleKey: string; value: string; change: string; icon: any; trend: 'up' | 'down' }> = {
+                    revenue: { titleKey: 'totalRevenue', value: '$45,231', change: '+20.1%', icon: DollarSign, trend: 'up' },
+                    users: { titleKey: 'activeUsers', value: '2,350', change: '+15.3%', icon: Users, trend: 'up' },
+                    conversion: { titleKey: 'conversionRate', value: '12.5%', change: '+4.2%', icon: TrendingUp, trend: 'up' },
+                    response: { titleKey: 'responseTime', value: '1.2s', change: '-8.1%', icon: Activity, trend: 'down' },
                 }
                 const stat = statsMap[widget.id]
-                return stat ? <StatsCard {...stat} /> : null
+                return stat ? <StatsCard title={t(stat.titleKey)} value={stat.value} change={stat.change} icon={stat.icon} trend={stat.trend} /> : null
             case 'chart':
                 return <RevenueChart />
             case 'users-chart':
@@ -73,8 +75,8 @@ export function DraggableDashboard() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-foreground">Dashboard Personalizable</h2>
-                <p className="text-sm text-muted-foreground">Arrastra los widgets para reordenarlos</p>
+                <h2 className="text-2xl font-bold text-foreground">{t('dashboardCustomizable')}</h2>
+                <p className="text-sm text-muted-foreground">{t('dragWidgets')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -87,7 +89,7 @@ export function DraggableDashboard() {
                         onDragEnd={handleDragEnd}
                         className={`relative cursor-move ${draggedWidget === widget.id ? 'opacity-50' : ''}`}
                     >
-                        <div className="absolute -top-2 -left-2 p-1 bg-muted rounded cursor-move opacity-0 hover:opacity-100 transition-opacity">
+                        <div className="absolute -top-2 -left-2 p-1 bg-muted rounded cursor-move opacity-0 hover:opacity-100 transition-opacity z-10">
                             <GripVertical size={14} />
                         </div>
                         {renderWidget(widget)}
@@ -114,7 +116,7 @@ export function DraggableDashboard() {
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Personalizar widgets</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('personalizeWidgets')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {widgets.map(widget => (
                         <button
@@ -125,7 +127,7 @@ export function DraggableDashboard() {
                                     : 'border-border hover:bg-accent text-foreground'
                                 }`}
                         >
-                            {widget.title}
+                            {t(widget.titleKey)}
                         </button>
                     ))}
                 </div>

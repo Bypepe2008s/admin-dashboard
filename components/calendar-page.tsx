@@ -14,9 +14,9 @@ interface CalendarEvent {
 }
 
 const initialEvents: CalendarEvent[] = [
-    { id: 1, title: 'Reunión de equipo', date: '2024-10-15', description: 'Revisión semanal', color: '#3b82f6' },
-    { id: 2, title: 'Lanzamiento producto', date: '2024-10-20', description: 'Versión 2.0', color: '#10b981' },
-    { id: 3, title: 'Capacitación', date: '2024-10-25', description: 'Nuevo sistema', color: '#f97316' },
+    { id: 1, title: 'Team Meeting', date: '2024-10-15', description: 'Weekly review', color: '#3b82f6' },
+    { id: 2, title: 'Product Launch', date: '2024-10-20', description: 'Version 2.0', color: '#10b981' },
+    { id: 3, title: 'Training', date: '2024-10-25', description: 'New system', color: '#f97316' },
 ]
 
 export function CalendarPage() {
@@ -28,8 +28,11 @@ export function CalendarPage() {
     const { showToast } = useToast()
     const { t } = useLanguage()
 
-    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-    const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+    const monthNames = [
+        t('jan'), t('feb'), t('mar'), t('apr'), t('may'), t('jun'),
+        t('jul'), t('aug'), t('sep'), t('oct'), t('nov'), t('dec')
+    ]
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
@@ -66,12 +69,12 @@ export function CalendarPage() {
     const handleSaveEvent = (event: Omit<CalendarEvent, 'id'>) => {
         setEvents([...events, { ...event, id: Math.max(...events.map(e => e.id), 0) + 1 }])
         setShowModal(false)
-        showToast('Evento agregado', 'success')
+        showToast(t('eventAdded'), 'success')
     }
 
     const handleDeleteEvent = (id: number) => {
         setEvents(events.filter(e => e.id !== id))
-        showToast('Evento eliminado', 'success')
+        showToast(t('eventDeleted'), 'success')
     }
 
     return (
@@ -133,7 +136,7 @@ export function CalendarPage() {
                                         </div>
                                     ))}
                                     {dayEvents.length > 2 && (
-                                        <div className="text-xs text-muted-foreground">+{dayEvents.length - 2} más</div>
+                                        <div className="text-xs text-muted-foreground">+{dayEvents.length - 2} {t('more')}</div>
                                     )}
                                 </div>
                             </div>
