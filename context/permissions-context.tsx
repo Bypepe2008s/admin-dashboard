@@ -65,21 +65,42 @@ const PermissionsContext = createContext<PermissionsContextType>({
 
 export function PermissionsProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth()
-    const [role, setRole] = useState<Role>(() => {
-        const stored = localStorage.getItem('userRole')
-        return (stored as Role) || 'admin'
-    })
 
+    // 1. Valor inicial seguro (sin localStorage)
+    const [role, setRole] = useState<Role>('admin')
+    const [mounted, setMounted] = useState(false)
+
+    // 2. Leer localStorage SOLO cuando estamos en el navegador
     useEffect(() => {
-        localStorage.setItem('userRole', role)
-    }, [role])
+        setMounted(true)
+        const stored = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null
+        if (stored && ['admin', 'editor', 'viewer'].includes(stored)) {
+            setRole(stored as Role)
+        }
+    }, [])
 
     const permissions = rolePermissions[role]
-
     const hasPermission = (key: keyof Permission) => permissions[key]
 
+    // 3. Función segura para guardar
+    const handleSetRole = (newRole: Role) => {
+        setRole(newRole)
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('userRole', newRole)
+        }
+    }
+
+    // 4. Evitar renderizado en el servidor con datos incorrectos
+    if (!mounted) {
+        return (
+            <PermissionsContext.Provider value={{ role: 'admin', setRole: handleSetRole, permissions: rolePermissions.admin, hasPermission }}>
+                {children}
+            </PermissionsContext.Provider>
+        )
+    }
+
     return (
-        <PermissionsContext.Provider value={{ role, setRole, permissions, hasPermission }}>
+        <PermissionsContext.Provider value={{ role, setRole: handleSetRole, permissions, hasPermission }}>
             {children}
         </PermissionsContext.Provider>
     )
