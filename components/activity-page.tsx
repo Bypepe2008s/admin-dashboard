@@ -2,7 +2,7 @@
 
 import { useActivity } from '@/context/activity-context'
 import { useLanguage } from '@/context/language-context'
-import { Trash2, UserPlus, UserCheck, UserX, LogIn, Download, Filter } from 'lucide-react'
+import { Trash2, UserPlus, UserCheck, UserX, LogIn, Download } from 'lucide-react'
 import { useState } from 'react'
 
 const typeIcons: Record<string, any> = {
@@ -36,6 +36,20 @@ export function ActivityPage() {
         delete: t('deletion'),
         login: t('login'),
         export: t('exportAction'),
+    }
+
+    // Traducir las acciones de actividad
+    const actionTranslations: Record<string, string> = {
+        'inició sesión': t('startedSession'),
+        'creó usuario': t('createdUser'),
+        'actualizó': t('updated'),
+        'exportó': t('exported'),
+        'eliminó': t('deleted'),
+    }
+
+    const targetTranslations: Record<string, string> = {
+        'Sistema': t('system'),
+        'Usuarios CSV': 'Users CSV',
     }
 
     return (
@@ -86,6 +100,8 @@ export function ActivityPage() {
                     <div className="space-y-3">
                         {filteredActivities.map(activity => {
                             const Icon = typeIcons[activity.type] || UserCheck
+                            const translatedAction = actionTranslations[activity.action] || activity.action
+                            const translatedTarget = targetTranslations[activity.target] || activity.target
                             return (
                                 <div key={activity.id} className="flex items-center gap-4 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
                                     <div className={`p-2 rounded-lg ${typeColors[activity.type]}`}>
@@ -94,8 +110,8 @@ export function ActivityPage() {
                                     <div className="flex-1">
                                         <p className="text-foreground">
                                             <span className="font-medium">{activity.user}</span>
-                                            {' '}{activity.action}{' '}
-                                            <span className="font-medium">{activity.target}</span>
+                                            {' '}{translatedAction}{' '}
+                                            <span className="font-medium">{translatedTarget}</span>
                                         </p>
                                         <p className="text-sm text-muted-foreground mt-1">{activity.timestamp}</p>
                                     </div>

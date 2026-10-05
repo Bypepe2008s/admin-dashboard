@@ -13,15 +13,15 @@ export function Sidebar() {
     const { hasPermission } = usePermissions()
 
     const menuItems = [
-        { id: 'dashboard' as const, label: 'Dashboard Pro', icon: LayoutDashboard, perm: 'canViewDashboard' as const },
-        { id: 'usuarios' as const, label: t('users'), icon: Users, perm: 'canManageUsers' as const },
-        { id: 'facturacion' as const, label: t('billing'), icon: FileText, perm: 'canViewBilling' as const },
-        { id: 'productos' as const, label: t('products'), icon: Package, perm: 'canManageProducts' as const },
-        { id: 'calendario' as const, label: t('calendar'), icon: Calendar, perm: 'canViewCalendar' as const },
-        { id: 'reportes' as const, label: 'Reportes', icon: TrendingUp, perm: 'canViewAnalytics' as const },
-        { id: 'analiticas' as const, label: t('analytics'), icon: BarChart3, perm: 'canViewAnalytics' as const },
-        { id: 'actividad' as const, label: 'Actividad', icon: Activity, perm: 'canViewDashboard' as const },
-        { id: 'configuracion' as const, label: t('settings'), icon: Settings, perm: 'canViewSettings' as const },
+        { id: 'dashboard' as const, label: 'dashboard', icon: LayoutDashboard, perm: 'canViewDashboard' as const },
+        { id: 'usuarios' as const, label: 'users', icon: Users, perm: 'canManageUsers' as const },
+        { id: 'facturacion' as const, label: 'billing', icon: FileText, perm: 'canViewBilling' as const },
+        { id: 'productos' as const, label: 'products', icon: Package, perm: 'canManageProducts' as const },
+        { id: 'calendario' as const, label: 'calendar', icon: Calendar, perm: 'canViewCalendar' as const },
+        { id: 'reportes' as const, label: 'reports', icon: TrendingUp, perm: 'canViewAnalytics' as const },
+        { id: 'analiticas' as const, label: 'analytics', icon: BarChart3, perm: 'canViewAnalytics' as const },
+        { id: 'actividad' as const, label: 'activity', icon: Activity, perm: 'canViewDashboard' as const },
+        { id: 'configuracion' as const, label: 'settings', icon: Settings, perm: 'canViewSettings' as const },
     ]
 
     const visibleItems = menuItems.filter(item => hasPermission(item.perm))
@@ -49,7 +49,7 @@ export function Sidebar() {
                             }`}
                     >
                         <item.icon size={20} />
-                        <span>{item.label}</span>
+                        <span>{t(item.label)}</span>
                     </button>
                 ))}
             </nav>

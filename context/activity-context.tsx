@@ -11,12 +11,6 @@ export interface Activity {
     type: 'create' | 'update' | 'delete' | 'login' | 'export'
 }
 
-interface ActivityContextType {
-    activities: Activity[]
-    addActivity: (activity: Omit<Activity, 'id' | 'timestamp'>) => void
-    clearActivities: () => void
-}
-
 const initialActivities: Activity[] = [
     { id: 1, user: 'Admin', action: 'inició sesión', target: 'Sistema', timestamp: 'Hace 5 min', type: 'login' },
     { id: 2, user: 'Admin', action: 'creó usuario', target: 'Juan Pérez', timestamp: 'Hace 1 hora', type: 'create' },
@@ -24,6 +18,12 @@ const initialActivities: Activity[] = [
     { id: 4, user: 'Admin', action: 'exportó', target: 'Usuarios CSV', timestamp: 'Hace 3 horas', type: 'export' },
     { id: 5, user: 'Admin', action: 'eliminó', target: 'Carlos López', timestamp: 'Hace 5 horas', type: 'delete' },
 ]
+
+interface ActivityContextType {
+    activities: Activity[]
+    addActivity: (activity: Omit<Activity, 'id' | 'timestamp'>) => void
+    clearActivities: () => void
+}
 
 const ActivityContext = createContext<ActivityContextType>({
     activities: [],
