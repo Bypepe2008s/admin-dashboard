@@ -6,13 +6,15 @@ import { LogOut, User, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigation } from './navigation'
 import { useLanguage } from '@/context/language-context'
+import { usePermissions } from '@/context/permissions-context'
 
 export function Header() {
     const { user, logout } = useAuth()
     const { setCurrentPage } = useNavigation()
+    const { t } = useLanguage()
+    const { role, setRole } = usePermissions() // <-- Añadido para el demo switcher
     const [showProfileMenu, setShowProfileMenu] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
-    const { t } = useLanguage()
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -37,6 +39,20 @@ export function Header() {
             </form>
 
             <div className="flex items-center gap-4">
+                {/* DEMO ROLE SWITCHER: Visible siempre para facilitar las pruebas */}
+                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg border border-border">
+                    <span className="text-xs font-medium text-muted-foreground">Demo Role:</span>
+                    <select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value as 'admin' | 'editor' | 'viewer')}
+                        className="bg-transparent text-sm font-semibold text-foreground focus:outline-none cursor-pointer hover:text-primary transition-colors"
+                    >
+                        <option value="admin">Admin</option>
+                        <option value="editor">Editor</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+
                 <NotificationsDropdown />
 
                 <div className="relative">
@@ -51,7 +67,7 @@ export function Header() {
                                 <User size={16} className="text-primary" />
                             </div>
                         )}
-                        <span className="text-sm font-medium text-foreground">{user?.name}</span>
+                        <span className="text-sm font-medium text-foreground hidden sm:block">{user?.name}</span>
                     </button>
 
                     {showProfileMenu && (
@@ -73,7 +89,7 @@ export function Header() {
                                     className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-accent transition-colors flex items-center gap-2 border-t border-border"
                                 >
                                     <LogOut size={16} />
-                                    {t('logout')}
+                                    {t('signOut')}
                                 </button>
                             </div>
                         </>
